@@ -1,22 +1,24 @@
-import cv2
-import numpy as np
+from TikTokApi import TikTokApi
 
-reddit = cv2.VideoCapture("reddit/concert.mp4")
-relax = cv2.VideoCapture("relax/1.mp4")
+# Initialize the TikTok API object
+api = TikTokApi()
 
+# Log in to your TikTok account
+username = "your_username"
+password = "your_password"
+api.login(username, password)
 
-while True:
-    # Capture frame-by-frame
-    ret, frame = reddit.read()
-    ret2, frame2 = relax.read()
-    frame = cv2.resize(frame,(960,540))
-    frame2 = cv2.resize(frame2,(960,540))
-    contrast = 1.0
-    brightness = 0
-    final_video = cv2.vconcat((frame, frame2))
-    # frame = np.clip(contrast * frame + brightness, 0, 255)
-    # cv2.imshow('frame', frame)
-    # cv2.imshow('frame',frame2)
-    cv2.imshow("result", final_video)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+# Set the video file path, caption, and hashtags
+video_file = "path/to/your/video.mp4"
+caption = "This is my TikTok video uploaded via Python!"
+hashtags = ["python", "tiktok", "coding"]
+
+# Upload the video
+video_data = api.upload_video(video_file)
+response = api.post_video(video_data["upload_id"], caption=caption, hashtags=hashtags)
+
+# Check if the video was uploaded successfully
+if response["status_code"] == 0:
+    print("Video uploaded successfully!")
+else:
+    print(f"Error uploading video: {response['status_msg']}")
