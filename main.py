@@ -28,17 +28,17 @@ final_clip = CompositeVideoClip([clip1,  clip2.set_position((0, clip1.size[1]))]
 # Export the final video to a file
 final_clip.write_videofile("video/final_video/finally.mp4", fps=30)
 
-# clip_duration = 60
+clip_duration = 60
 
-# # Get the total duration of the final video in seconds
-# total_duration = final_clip.duration
+# Get the total duration of the final video in seconds
+total_duration = final_clip.duration
 
-# # Calculate the number of clips needed to cover the entire duration of the video
-# num_clips = int(total_duration // clip_duration) + 1
+# Calculate the number of clips needed to cover the entire duration of the video
+num_clips = int(total_duration // clip_duration) + 1
 
-# # Loop through each clip and export it to a separate video file
-# for i in range(num_clips):
-#     start_time = i * clip_duration
-#     end_time = min((i + 1) * clip_duration, total_duration)
-#     clip = final_clip.subclip(start_time, end_time)
-#     clip.write_videofile(f"clip_{i}.mp4", fps=30)
+# Loop through each clip and export it to a separate video file
+for i in range(num_clips):
+    start_time = i * clip_duration
+    end_time = min((i + 1) * clip_duration, total_duration)
+    clip = final_clip.subclip(start_time, end_time)
+    clip.write_videofile(f"clip_{i}.mp4", fps=30)
