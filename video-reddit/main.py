@@ -1,22 +1,62 @@
-import cv2
-import numpy as np
+from moviepy.editor import *
 
-reddit = cv2.VideoCapture("reddit/concert.mp4")
-relax = cv2.VideoCapture("relax/1.mp4")
+# Load the two video files
+clip1 = VideoFileClip("video/reddit/test2.mp4")
+clip2 = VideoFileClip("video/relax/test2.mp4").subclip(10).without_audio()
+# clip3 = VideoFileClip("video/subs.mp4").without_audio()
+
+clip1 = clip1.resize((1280, 720))
+clip2 = clip2.resize((1280, 720))
+# clip3 = clip3.resize((1280, 720))
+
+# Set the duration of the final video to the longer of the two videos
+# lowest_duration = min([clip1.duration, clip2.duration])
 
 
-while True:
-    # Capture frame-by-frame
-    ret, frame = reddit.read()
-    ret2, frame2 = relax.read()
-    frame = cv2.resize(frame,(960,540))
-    frame2 = cv2.resize(frame2,(960,540))
-    contrast = 1.0
-    brightness = 0
-    final_video = cv2.vconcat((frame, frame2))
-    # frame = np.clip(contrast * frame + brightness, 0, 255)
-    # cv2.imshow('frame', frame)
-    # cv2.imshow('frame',frame2)
-    cv2.imshow("result", final_video)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+# Set the size of the final video to the width of the first video and the height of both videos combined
+final_size = (clip1.size[0], clip1.size[1] + clip2.size[1])
+
+
+# Create a CompositeVideoClip by stacking the two video clips and the black background
+final_clip = CompositeVideoClip([clip1,  clip2.set_position((0, clip1.size[1]))], size=final_size)
+
+
+# Set the duration of the final video to the longer of the two videos
+if clip1.duration> clip2.duration:
+    final_clip.duration = clip2.duration
+if clip1.duration< clip2.duration:
+    final_clip.duration = clip1.duration
+else:
+    print("Something went wrong")
+
+final_clip = CompositeVideoClip([clip1,  clip2.set_position((0, clip1.size[1]))], size=final_size)
+
+# Export the final video to a file
+final_clip.write_videofile("video/final_video/finally.mp4", fps=30)
+
+clip_duration = 60
+
+# Get the total duration of the final video in seconds
+total_duration = final_clip.duration
+
+# Calculate the number of clips needed to cover the entire duration of the video
+num_clips = int(total_duration // clip_duration) + 1
+
+
+
+
+# Loop through each clip and export it to a separate video file
+for i in range(num_clips):
+    
+    start_time = i * clip_duration
+    end_time = min((i + 1) * clip_duration, total_duration)
+    clip = final_clip.subclip(start_time, end_time)
+    # clip = concatenate_videoclips([clip, clip3])
+    clip.write_videofile(f"clip_{i}.mp4", fps=30)
+
+
+
+
+
+
+    
